@@ -1,137 +1,50 @@
-# An Post API Wrapper Gem PRD
+# AnPost API Ruby Gem PRD
 
 ## Overview
-Create a Ruby gem that provides a simple interface to interact with An Post's API services, specifically for return label creation and tracking information retrieval. The gem should follow similar patterns to the NinjaVan API wrapper for consistency and ease of use.
+The AnPost API Ruby gem provides a simple interface to interact with An Post's API services for return label creation and tracking information retrieval. The gem should support both production and test environments.
 
-## Core Features
+## Core Requirements
 
-### 1. Configuration
-The gem should support flexible configuration with the following options:
-- OCP APIM Subscription Key for API authentication
-- HTTP Proxy configuration (optional)
-- SFTP configuration for tracking
-  - Host
-  - Port
-  - User
-  - Password
-  - Path
+### Configuration
+- Simple configuration system with only test/production environment toggle
+- No API key/secret management (authentication handled via subscription key in requests)
+- Base URL determined by environment:
+  - Test: https://apim-anpost-mailslabels-nonprod.dev-anpost.com/returnsapi-q/v2/
+  - Production: https://apim-anpost-mailslabels.anpost.com/returnsapi/v2/
 
-Example configuration:
-```ruby
-AnpostAPI.configure do |config|
-  config.ocp_apim_subscription_key = 'your_key'
-  
-  # Optional HTTP proxy configuration
-  config.http_proxy_config = {
-    host: 'proxy.example.com',
-    port: 3128,
-    username: 'user',
-    password: 'pass'
-  }
-  
-  # SFTP configuration for tracking
-  config.tracking_sftp_config = {
-    host: 'sftp.anpost.com',
-    port: 22,
-    user: 'username',
-    password: 'password',
-    path: '/path/to/files'
-  }
-end
-```
+### API Client
+- Clean, minimal HTTP client implementation using Faraday
+- Default JSON headers
+- Subscription key passed per-request, not in configuration
+- Proper error handling for API responses
+- No persistent authentication required
 
-### 2. Return Label Resource
-Create a resource for generating return labels through An Post's API.
+### Resources
+1. Return Label Resource
+   - Create return labels with subscription key authentication
+   - Handle all necessary parameters for label creation
+   - Support JSON request/response formats
 
-Features:
-- Create return labels via API endpoint
-- Support proxy configuration if provided
-- Handle API responses and errors appropriately
-
-API Endpoint:
-- URL: https://apim-anpost-mailslabels.anpost.com/returnsapi/v2/returnsLabel
-- Method: POST
-- Headers:
-  - Ocp-Apim-Subscription-Key
-  - Content-Type: application/json
-  - Accept: application/json
-
-Request Structure:
-```json
-{
-  "outputResponseType": "Label",
-  "sender": {
-    "firstName": "Jane",
-    "lastName": "Smith",
-    "contactNumber": "0871234567",
-    "emailAddress": "test@email.com",
-    "senderAddress": {
-      "addressLine1": "Exo Building",
-      "addressLine2": "North Wall Quay",
-      "city": "Dublin 1",
-      "eircode": "D01 W5Y2",
-      "county": "Dublin",
-      "country": "Ireland",
-      "countrycode": "IE"
-    }
-  },
-  "internationalSecurityDeclarationItems": [
-    {
-      "itemDescription": "book"
-    }
-  ],
-  "retailerAccountNo": "account_number",
-  "retailerReturnReason": "Does not fit",
-  "retailerOrderNumber": "123456789"
-}
-```
-
-### 3. Tracking Resource
-Implement tracking functionality using SFTP to retrieve and parse tracking files.
-
-Features:
-- Connect to SFTP server using provided credentials
-- Read and parse tracking files sequentially
-- Support block-based processing of tracking data
-- Handle file naming conventions and incremental reading
-- Utilize existing SFTP client and tracking parser implementations
-
-Example Usage:
-```ruby
-client = AnpostAPI::Client.new
-client.tracking.get_updates(last_file: 'cdt0379554008300.txt') do |filename, data|
-  # Process tracking data
-  puts "Processing file: #{filename}"
-  puts "Data: #{data}"
-end
-```
+2. Tracking Resource
+   - Retrieve tracking information via SFTP
+   - SFTP credentials provided per-request, not in configuration
+   - Support file download and parsing
 
 ## Technical Requirements
+- Ruby >= 3.0.0
+- Faraday for HTTP requests
+- net-sftp for SFTP operations
+- JSON for data handling
+- Proper error classes and handling
+- Comprehensive test coverage
+- Standard Ruby code style
 
-### 1. Dependencies
-- net-sftp: For SFTP connections
-- faraday: For HTTP requests
-- json: For JSON parsing
-
-### 2. Error Handling
-- Implement comprehensive error handling for:
-  - API connection failures
-  - SFTP connection issues
-  - File parsing errors
-  - Invalid configurations
-  - API response errors
-
-### 3. Testing
-- Implement RSpec tests for all functionality
-- Include VCR cassettes for API interactions
-- Mock SFTP interactions for testing
-- Achieve high test coverage
-
-### 4. Documentation
-- Provide detailed README with setup instructions
-- Include usage examples for all features
-- Document all configuration options
-- Add YARD documentation for methods
+## Implementation Notes
+- Keep configuration minimal and focused
+- Move authentication to request level
+- Support environment-based URL switching
+- Handle errors gracefully with descriptive messages
+- Follow Ruby gem best practices
 
 ## Implementation Guidelines
 
