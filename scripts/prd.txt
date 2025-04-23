@@ -1,0 +1,190 @@
+# An Post API Wrapper Gem PRD
+
+## Overview
+Create a Ruby gem that provides a simple interface to interact with An Post's API services, specifically for return label creation and tracking information retrieval. The gem should follow similar patterns to the NinjaVan API wrapper for consistency and ease of use.
+
+## Core Features
+
+### 1. Configuration
+The gem should support flexible configuration with the following options:
+- OCP APIM Subscription Key for API authentication
+- HTTP Proxy configuration (optional)
+- SFTP configuration for tracking
+  - Host
+  - Port
+  - User
+  - Password
+  - Path
+
+Example configuration:
+```ruby
+AnpostAPI.configure do |config|
+  config.ocp_apim_subscription_key = 'your_key'
+  
+  # Optional HTTP proxy configuration
+  config.http_proxy_config = {
+    host: 'proxy.example.com',
+    port: 3128,
+    username: 'user',
+    password: 'pass'
+  }
+  
+  # SFTP configuration for tracking
+  config.tracking_sftp_config = {
+    host: 'sftp.anpost.com',
+    port: 22,
+    user: 'username',
+    password: 'password',
+    path: '/path/to/files'
+  }
+end
+```
+
+### 2. Return Label Resource
+Create a resource for generating return labels through An Post's API.
+
+Features:
+- Create return labels via API endpoint
+- Support proxy configuration if provided
+- Handle API responses and errors appropriately
+
+API Endpoint:
+- URL: https://apim-anpost-mailslabels.anpost.com/returnsapi/v2/returnsLabel
+- Method: POST
+- Headers:
+  - Ocp-Apim-Subscription-Key
+  - Content-Type: application/json
+  - Accept: application/json
+
+Request Structure:
+```json
+{
+  "outputResponseType": "Label",
+  "sender": {
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "contactNumber": "0871234567",
+    "emailAddress": "test@email.com",
+    "senderAddress": {
+      "addressLine1": "Exo Building",
+      "addressLine2": "North Wall Quay",
+      "city": "Dublin 1",
+      "eircode": "D01 W5Y2",
+      "county": "Dublin",
+      "country": "Ireland",
+      "countrycode": "IE"
+    }
+  },
+  "internationalSecurityDeclarationItems": [
+    {
+      "itemDescription": "book"
+    }
+  ],
+  "retailerAccountNo": "account_number",
+  "retailerReturnReason": "Does not fit",
+  "retailerOrderNumber": "123456789"
+}
+```
+
+### 3. Tracking Resource
+Implement tracking functionality using SFTP to retrieve and parse tracking files.
+
+Features:
+- Connect to SFTP server using provided credentials
+- Read and parse tracking files sequentially
+- Support block-based processing of tracking data
+- Handle file naming conventions and incremental reading
+- Utilize existing SFTP client and tracking parser implementations
+
+Example Usage:
+```ruby
+client = AnpostAPI::Client.new
+client.tracking.get_updates(last_file: 'cdt0379554008300.txt') do |filename, data|
+  # Process tracking data
+  puts "Processing file: #{filename}"
+  puts "Data: #{data}"
+end
+```
+
+## Technical Requirements
+
+### 1. Dependencies
+- net-sftp: For SFTP connections
+- faraday: For HTTP requests
+- json: For JSON parsing
+
+### 2. Error Handling
+- Implement comprehensive error handling for:
+  - API connection failures
+  - SFTP connection issues
+  - File parsing errors
+  - Invalid configurations
+  - API response errors
+
+### 3. Testing
+- Implement RSpec tests for all functionality
+- Include VCR cassettes for API interactions
+- Mock SFTP interactions for testing
+- Achieve high test coverage
+
+### 4. Documentation
+- Provide detailed README with setup instructions
+- Include usage examples for all features
+- Document all configuration options
+- Add YARD documentation for methods
+
+## Implementation Guidelines
+
+### 1. Code Structure
+```
+lib/
+  anpost/
+    version.rb
+    configuration.rb
+    client.rb
+    resources/
+      return_label.rb
+      tracking.rb
+    errors.rb
+    sftp/
+      client.rb
+      tracking_parser.rb
+```
+
+### 2. Class Responsibilities
+- Configuration: Handle gem configuration
+- Client: Main interface to the gem
+- ReturnLabel: Handle return label API requests
+- Tracking: Manage SFTP tracking file retrieval and parsing
+- SFTPClient: Handle SFTP connections and file operations
+- TrackingParser: Parse tracking file contents
+
+### 3. Error Classes
+- AnPost::Error: Base error class
+- AnPost::ConfigurationError: Configuration-related errors
+- AnPost::APIError: API-related errors
+- AnPost::SFTPError: SFTP-related errors
+- AnPost::ParsingError: File parsing errors
+
+## Delivery Requirements
+
+### 1. Phase 1: Basic Setup
+- Project structure
+- Configuration implementation
+- Basic error classes
+- Initial documentation
+
+### 2. Phase 2: Return Label Implementation
+- Return label API integration
+- Error handling
+- Tests and documentation
+
+### 3. Phase 3: Tracking Implementation
+- SFTP client integration
+- Tracking parser implementation
+- Tests and documentation
+
+### 4. Phase 4: Finalization
+- Complete documentation
+- Example implementations
+- Final testing and bug fixes 

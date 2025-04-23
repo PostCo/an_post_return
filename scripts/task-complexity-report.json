@@ -1,0 +1,131 @@
+{
+  "meta": {
+    "generatedAt": "2025-04-23T14:30:12.935Z",
+    "tasksAnalyzed": 15,
+    "thresholdScore": 5,
+    "projectName": "Your Project Name",
+    "usedResearch": false
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 1,
+      "taskTitle": "Set up project structure and basic files",
+      "complexityScore": 4,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the process of setting up a Ruby gem structure with specific directories, files, and dependencies into clear sequential steps",
+      "reasoning": "This task involves standard Ruby gem setup with a moderate directory structure. While not highly complex, it requires careful organization of files and proper gemspec configuration. Breaking it into subtasks for initialization, directory creation, file setup, gemspec configuration, and module initialization would make it more manageable."
+    },
+    {
+      "taskId": 2,
+      "taskTitle": "Implement Configuration class",
+      "complexityScore": 3,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Divide the implementation of a Ruby configuration class with attribute management, validation, and module integration into logical steps",
+      "reasoning": "This is a relatively straightforward configuration implementation with a few attributes and standard pattern. The complexity is low to moderate, requiring attribute definition, module integration, validation logic, and documentation. Four subtasks would adequately cover the implementation needs."
+    },
+    {
+      "taskId": 3,
+      "taskTitle": "Implement base error classes",
+      "complexityScore": 2,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the creation of a hierarchical error class structure with proper initialization and message handling into discrete steps",
+      "reasoning": "Creating error classes is a relatively simple task with low complexity. The hierarchy is straightforward with a base class and several subclasses. Four subtasks would cover designing the hierarchy, implementing the base class, implementing subclasses, and adding error wrapping functionality."
+    },
+    {
+      "taskId": 4,
+      "taskTitle": "Implement Client class",
+      "complexityScore": 4,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Divide the implementation of a client class that manages configuration, resource access, and validation into clear implementation steps",
+      "reasoning": "The client class serves as the main interface but has moderate complexity due to configuration handling, resource management, and validation requirements. Five subtasks would allow for proper separation of concerns: class structure, configuration handling, resource access methods, validation logic, and documentation."
+    },
+    {
+      "taskId": 5,
+      "taskTitle": "Implement HTTP request handling",
+      "complexityScore": 6,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down the implementation of an HTTP client with proxy support, header management, and comprehensive error handling into specific implementation tasks",
+      "reasoning": "HTTP request handling has higher complexity due to proxy configuration, header management, error mapping, and response parsing. Six subtasks would cover the core HTTP client, proxy configuration, header management, response parsing, error handling, and integration with the main client."
+    },
+    {
+      "taskId": 6,
+      "taskTitle": "Implement ReturnLabel resource",
+      "complexityScore": 5,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Divide the implementation of an API resource class for generating return labels with validation, request formatting, and response handling into clear steps",
+      "reasoning": "This resource implementation has moderate complexity due to API interaction, parameter validation, and response handling. Five subtasks would cover class structure, parameter validation, request building, response parsing, and error handling specific to this resource."
+    },
+    {
+      "taskId": 7,
+      "taskTitle": "Implement SFTP client",
+      "complexityScore": 6,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down the implementation of an SFTP client with connection management, file operations, and error handling into discrete implementation tasks",
+      "reasoning": "SFTP client implementation has higher complexity due to connection management, file operations, and error handling for network operations. Six subtasks would cover client structure, connection management, file listing, file downloading, error handling, and integration with the main client."
+    },
+    {
+      "taskId": 8,
+      "taskTitle": "Implement tracking file parser",
+      "complexityScore": 5,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Divide the implementation of a parser for specialized tracking file formats into logical parsing components and data transformation steps",
+      "reasoning": "File parsing has moderate complexity due to the need to understand and handle specific file formats and transform them into structured data. Five subtasks would cover parser structure, format analysis, line parsing, data transformation, and error handling for malformed content."
+    },
+    {
+      "taskId": 9,
+      "taskTitle": "Implement Tracking resource",
+      "complexityScore": 7,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Break down the implementation of a tracking resource that integrates SFTP access, file parsing, and incremental processing into clear implementation steps",
+      "reasoning": "This task has higher complexity as it integrates multiple components (SFTP client and parser) and implements incremental file processing logic. Six subtasks would cover class structure, SFTP integration, file ordering logic, incremental processing, data aggregation, and error handling."
+    },
+    {
+      "taskId": 10,
+      "taskTitle": "Add comprehensive documentation",
+      "complexityScore": 4,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Divide the process of adding YARD documentation to all classes and methods into logical documentation groups or components",
+      "reasoning": "Documentation has moderate complexity due to the need to cover multiple classes and methods with appropriate tags and examples. Five subtasks would allow documentation to be organized by component: core module, configuration, client, resources, and SFTP components."
+    },
+    {
+      "taskId": 11,
+      "taskTitle": "Implement RSpec test suite for configuration and client",
+      "complexityScore": 5,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the implementation of RSpec tests for configuration and client classes into specific test groups and scenarios",
+      "reasoning": "Testing configuration and client classes has moderate complexity due to the need for various test scenarios, mocks, and validation tests. Five subtasks would cover test setup, configuration tests, client initialization tests, resource access tests, and error handling tests."
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Implement RSpec tests for ReturnLabel resource",
+      "complexityScore": 6,
+      "recommendedSubtasks": 6,
+      "expansionPrompt": "Divide the implementation of RSpec tests for the ReturnLabel resource with API interaction testing into specific test groups and fixtures",
+      "reasoning": "Testing the ReturnLabel resource has higher complexity due to API interaction, VCR setup, fixture creation, and various test scenarios. Six subtasks would cover test setup, fixture creation, parameter validation tests, successful request tests, error handling tests, and integration tests."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Implement RSpec tests for SFTP and Tracking",
+      "complexityScore": 7,
+      "recommendedSubtasks": 7,
+      "expansionPrompt": "Break down the implementation of RSpec tests for SFTP client, tracking parser, and Tracking resource into specific test components and scenarios",
+      "reasoning": "Testing SFTP and Tracking components has high complexity due to the need to mock SFTP interactions, create file fixtures, and test complex integration scenarios. Seven subtasks would cover test setup, SFTP client tests, parser tests, tracking resource tests, fixture creation, integration tests, and error handling tests."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Create comprehensive README and usage examples",
+      "complexityScore": 3,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Divide the creation of a comprehensive README with installation, configuration, and usage examples into logical documentation sections",
+      "reasoning": "Creating documentation has low to moderate complexity, primarily requiring clear organization and examples. Four subtasks would cover installation and setup documentation, configuration examples, usage examples for each feature, and development/contribution guidelines."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Finalize gem packaging and release preparation",
+      "complexityScore": 3,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the process of finalizing a Ruby gem for release with proper metadata, versioning, and documentation into specific preparation steps",
+      "reasoning": "Finalizing the gem has low to moderate complexity, involving standard packaging steps. Four subtasks would cover gemspec updates, version setting, changelog creation, and final verification/build testing."
+    }
+  ]
+}
