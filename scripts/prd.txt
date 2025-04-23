@@ -6,8 +6,13 @@ The AnPost API Ruby gem provides a simple interface to interact with An Post's A
 ## Core Requirements
 
 ### Configuration
-- Simple configuration system with only test/production environment toggle
-- No API key/secret management (authentication handled via subscription key in requests)
+- Simple configuration system with:
+  - test/production environment toggle
+  - HTTP proxy configuration (optional):
+    - proxy_host: Host of the proxy server
+    - proxy_port: Port number
+    - proxy_username: Optional proxy authentication username
+    - proxy_password: Optional proxy authentication password
 - Base URL determined by environment:
   - Test: https://apim-anpost-mailslabels-nonprod.dev-anpost.com/returnsapi-q/v2/
   - Production: https://apim-anpost-mailslabels.anpost.com/returnsapi/v2/
@@ -17,7 +22,7 @@ The AnPost API Ruby gem provides a simple interface to interact with An Post's A
 - Default JSON headers
 - Subscription key passed per-request, not in configuration
 - Proper error handling for API responses
-- No persistent authentication required
+- Support for HTTP proxy configuration from global settings
 
 ### Resources
 1. Return Label Resource
@@ -26,15 +31,34 @@ The AnPost API Ruby gem provides a simple interface to interact with An Post's A
    - Support JSON request/response formats
 
 2. Tracking Resource
-   - Retrieve tracking information via SFTP
-   - SFTP credentials provided per-request, not in configuration
-   - Support file download and parsing
+   - Implement SFTP client based on existing implementation in sftp_test.rb:
+     - Support proxy configuration from global settings
+     - Connection management (connect/disconnect)
+     - File operations (read_file, list_files)
+     - Error handling for SFTP operations
+   
+   - Implement tracking parser based on existing implementation:
+     - Parse tracking file format (header, data records, footer)
+     - Support both '+' and ',' delimiters
+     - Handle quoted fields
+     - Structured data output with proper field mapping
+     
+   - Features:
+     - List available tracking files with glob pattern support
+     - Download and parse tracking files
+     - Stream processing for large files
+     - Proper cleanup of temporary files
+     - Support for incremental file processing
+     - Status tracking and aggregation
 
 ## Technical Requirements
 - Ruby >= 3.0.0
-- Faraday for HTTP requests
-- net-sftp for SFTP operations
-- JSON for data handling
+- Dependencies:
+  - faraday for HTTP requests
+  - net-sftp for SFTP operations
+  - net-ssh-http-proxy for SFTP proxy support
+  - json for data handling
+  - csv for tracking file parsing
 - Proper error classes and handling
 - Comprehensive test coverage
 - Standard Ruby code style
@@ -45,59 +69,79 @@ The AnPost API Ruby gem provides a simple interface to interact with An Post's A
 - Support environment-based URL switching
 - Handle errors gracefully with descriptive messages
 - Follow Ruby gem best practices
+- Reuse existing SFTP and parsing code from sftp_test.rb
+- Ensure proper resource cleanup
+- Support proxy configuration across all components
+
+## SFTP Implementation Details
+1. SFTP Client Class:
+   ```ruby
+   module AnpostAPI
+     module SFTP
+       class Client
+         def initialize(host:, username:, password:, config: AnpostAPI.configuration)
+           # Initialize with credentials and use proxy from global config if available
+         end
+
+         def connect
+           # Establish SFTP connection with proxy support
+         end
+
+         def disconnect
+           # Clean disconnect
+         end
+
+         def read_file(remote_path, &block)
+           # Download and process file
+         end
+
+         def list_files(remote_path, glob_pattern = nil)
+           # List available files
+         end
+       end
+     end
+   end
+   ```
+
+2. Tracking Parser Class:
+   ```ruby
+   module AnpostAPI
+     module SFTP
+       class TrackingParser
+         def initialize(file_path)
+           # Initialize with file path
+         end
+
+         def parse
+           # Parse file contents
+           # Return structured data with header, records, and footer
+         end
+       end
+     end
+   end
+   ```
+
+3. Example Usage:
+   ```ruby
+   client = AnpostAPI::Client.new
+   
+   # Configure proxy if needed
+   AnpostAPI.configure do |config|
+     config.proxy_host = "proxy.example.com"
+     config.proxy_port = 3128
+     config.proxy_username = "user"
+     config.proxy_password = "pass"
+   end
+   
+   # Use tracking resource
+   client.tracking.get_updates(last_file: "cdt0379554008300.txt") do |filename, data|
+     # Process tracking data
+     puts "Processing file: #{filename}"
+     puts "Data: #{data}"
+   end
+   ```
 
 ## Implementation Guidelines
 
 ### 1. Code Structure
 ```
-lib/
-  anpost/
-    version.rb
-    configuration.rb
-    client.rb
-    resources/
-      return_label.rb
-      tracking.rb
-    errors.rb
-    sftp/
-      client.rb
-      tracking_parser.rb
-```
-
-### 2. Class Responsibilities
-- Configuration: Handle gem configuration
-- Client: Main interface to the gem
-- ReturnLabel: Handle return label API requests
-- Tracking: Manage SFTP tracking file retrieval and parsing
-- SFTPClient: Handle SFTP connections and file operations
-- TrackingParser: Parse tracking file contents
-
-### 3. Error Classes
-- AnPost::Error: Base error class
-- AnPost::ConfigurationError: Configuration-related errors
-- AnPost::APIError: API-related errors
-- AnPost::SFTPError: SFTP-related errors
-- AnPost::ParsingError: File parsing errors
-
-## Delivery Requirements
-
-### 1. Phase 1: Basic Setup
-- Project structure
-- Configuration implementation
-- Basic error classes
-- Initial documentation
-
-### 2. Phase 2: Return Label Implementation
-- Return label API integration
-- Error handling
-- Tests and documentation
-
-### 3. Phase 3: Tracking Implementation
-- SFTP client integration
-- Tracking parser implementation
-- Tests and documentation
-
-### 4. Phase 4: Finalization
-- Complete documentation
-- Example implementations
-- Final testing and bug fixes 

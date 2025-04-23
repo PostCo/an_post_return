@@ -1,11 +1,23 @@
 # frozen_string_literal: true
 
+require "faraday"
+require "json"
+require_relative "configuration"
+require_relative "errors"
+require_relative "resources/return_label"
+
 module AnpostAPI
   class Client
-    attr_reader :config
+    attr_reader :config, :connection
 
-    def initialize(config = AnpostAPI.configuration)
+    def initialize(config = Configuration.new)
       @config = config
+      @config.validate!
+      @connection = setup_connection
+    end
+
+    def return_labels
+      @return_labels ||= Resources::ReturnLabel.new(self)
     end
 
     def connection
@@ -48,6 +60,17 @@ module AnpostAPI
       return response.body["error"] if response.body.is_a?(Hash) && response.body["error"]
 
       "Unknown error"
+    end
+
+    def setup_connection
+      Faraday.new(url: config.api_base_url) do |conn|
+        conn.headers = {
+          "Content-Type" => "application/json",
+          "Accept" => "application/json",
+          "X-API-Key" => config.api_key,
+          "X-API-Secret" => config.api_secret,
+        }
+      end
     end
   end
 end
