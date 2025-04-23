@@ -11,6 +11,8 @@ module AnpostAPI
     def connection
       @connection ||=
         Faraday.new(url: config.api_base_url) do |faraday|
+          faraday.proxy = config.proxy_uri if config.proxy_configured?
+
           faraday.request :json
           faraday.response :json
           faraday.adapter Faraday.default_adapter
@@ -34,6 +36,8 @@ module AnpostAPI
         raise ConfigurationError, "Invalid subscription key"
       when 404
         raise APIError, "Resource not found"
+      when 407
+        raise ConfigurationError, "Proxy authentication required"
       else
         raise APIError, "API request failed with status #{response.status}: #{parse_error_message(response)}"
       end
