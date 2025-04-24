@@ -1,8 +1,8 @@
 require "spec_helper"
-require "an_post_return/tracking_data_parser"
+require "an_post_return/sftp/tracking_parser"
 require "tempfile"
 
-RSpec.describe AnPostReturn::TrackingDataParser do
+RSpec.describe AnPostReturn::SFTP::TrackingParser do
   let(:parser) { described_class.new }
   let(:valid_content) { <<~TXT }
       00,FILE001,20240320143000,2
