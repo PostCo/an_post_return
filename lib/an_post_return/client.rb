@@ -40,13 +40,13 @@ module AnPostReturn
     def handle_response(response)
       case response.status
       when 200..299
-        if response.body.is_a?(Hash) && response.body["success"]
-          response.body
-        else
+        if response.body.is_a?(Hash) && response.body["success"] == false
           raise APIError.new(
                   "API request failed with status #{response.status}: #{parse_error_message(response)}",
                   response: response,
                 )
+        else
+          response.body
         end
       when 400
         raise ValidationError.new(parse_error_message(response), response: response)
