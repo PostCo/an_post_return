@@ -1,28 +1,99 @@
-# AnpostApi
+# AnPostReturn
 
-TODO: Delete this and the text below, and describe your gem
+A Ruby gem for integrating with An Post's return label generation service. This gem provides a simple interface for creating return labels for domestic, EU, and non-EU returns through An Post's SFTP service.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/anpost_api`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Features
+
+- Generate return labels for domestic, EU, and non-EU returns
+- SFTP integration for secure file transfer
+- Simple configuration options
+- Robust error handling
+- Comprehensive tracking data parsing
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+Add this line to your application's Gemfile:
 
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+```ruby
+gem 'an_post_return'
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+And then execute:
 
 ```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle install
+```
+
+Or install it yourself as:
+
+```bash
+gem install an_post_return
+```
+
+## Configuration
+
+Configure the gem with your An Post credentials:
+
+```ruby
+AnPostReturn.configure do |config|
+  config.sftp_host = 'your_sftp_host'
+  config.sftp_username = 'your_username'
+  config.sftp_password = 'your_password'
+  config.environment = :production # or :test for sandbox environment
+end
 ```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Creating a Return Label
+
+```ruby
+# Initialize a new return label request
+label = AnPostReturn::ReturnLabel.create(
+  # Required parameters
+  contract_number: "123456",
+  product_code: "DOM",
+  weight: 1.5,
+
+  # Address details
+  from_address: {
+    name: "Sender Name",
+    address_line_1: "123 Sender Street",
+    city: "Dublin",
+    county: "Dublin",
+    postcode: "D01 F5P2",
+    country: "IE"
+  },
+  to_address: {
+    name: "Recipient Name",
+    address_line_1: "456 Recipient Road",
+    city: "Cork",
+    county: "Cork",
+    postcode: "T12 RX8C",
+    country: "IE"
+  }
+)
+
+# Access the label details
+puts label.tracking_number
+puts label.label_url
+```
+
+### Listing Available Files
+
+```ruby
+client = AnPostReturn::SFTPClient.new
+files = client.list_files
+puts files
+```
+
+### Reading a Specific File
+
+```ruby
+client = AnPostReturn::SFTPClient.new
+content = client.read_file('path/to/file.txt')
+puts content
+```
 
 ## Development
 
@@ -32,7 +103,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/anpost_api. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/anpost_api/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/PostCo/an_post_return. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/PostCo/an_post_return/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -40,4 +111,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the AnpostApi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/anpost_api/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the AnPostReturn project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/PostCo/an_post_return/blob/main/CODE_OF_CONDUCT.md).

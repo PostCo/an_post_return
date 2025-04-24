@@ -1,7 +1,7 @@
 require "csv"
 require "time"
 
-module AnpostAPI
+module AnPostReturn
   class TrackingDataParser
     REQUIRED_FIELDS = %w[tracking_number status timestamp].freeze
     TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S".freeze
@@ -10,7 +10,7 @@ module AnpostAPI
     #
     # @param file [File, Tempfile] CSV file to parse
     # @return [Array<Hash>] Array of tracking data entries
-    # @raise [AnpostAPI::ParserError] if parsing fails
+    # @raise [AnPostReturn::ParserError] if parsing fails
     def self.parse(file)
       new.parse(file)
     end
@@ -19,7 +19,7 @@ module AnpostAPI
     #
     # @param file_path [String] Path to the text file to parse
     # @return [Hash] Hash containing header, data records, and footer information
-    # @raise [AnpostAPI::ParserError] if parsing fails
+    # @raise [AnPostReturn::ParserError] if parsing fails
     def parse(file_path)
       validate_file!(file_path)
 

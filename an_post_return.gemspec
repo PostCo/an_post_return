@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
-require_relative "lib/anpost_api/version"
+require_relative "lib/an_post_return/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "anpost_api"
-  spec.version = AnpostAPI::VERSION
+  spec.name = "an_post_return"
+  spec.version = AnPostReturn::VERSION
   spec.authors = ["Andy Chong"]
   spec.email = ["andygg1996personal@gmail.com"]
 
   spec.summary = "Ruby wrapper for An Post's API services"
   spec.description =
     "A Ruby gem that provides a simple interface to interact with An Post's API services, specifically for return label creation and tracking information retrieval."
-  spec.homepage = "https://github.com/PostCo/anpost_api"
+  spec.homepage = "https://github.com/PostCo/an_post_return"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/PostCo/anpost_api"
-  spec.metadata["changelog_uri"] = "https://github.com/PostCo/anpost_api/blob/main/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/PostCo/an_post_return"
+  spec.metadata["changelog_uri"] = "https://github.com/PostCo/an_post_return/blob/main/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

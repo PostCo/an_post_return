@@ -4,9 +4,9 @@ require "faraday"
 require "json"
 require "net/sftp"
 
-require_relative "anpost_api/version"
+require_relative "an_post_return/version"
 
-module AnpostAPI
+module AnPostReturn
   class Error < StandardError
   end
   class ConfigurationError < Error
@@ -33,19 +33,19 @@ module AnpostAPI
   end
 
   # Autoload core classes
-  autoload :Configuration, "anpost_api/configuration"
-  autoload :Client, "anpost_api/client"
+  autoload :Configuration, "an_post_return/configuration"
+  autoload :Client, "an_post_return/client"
 
   # Autoload resource classes
   module Resources
-    autoload :Base, "anpost_api/resources/base"
-    autoload :ReturnLabel, "anpost_api/resources/return_label"
-    autoload :Tracking, "anpost_api/resources/tracking"
+    autoload :Base, "an_post_return/resources/base"
+    autoload :ReturnLabel, "an_post_return/resources/return_label"
+    autoload :Tracking, "an_post_return/resources/tracking"
   end
 
   # Autoload SFTP related classes
   module SFTP
-    autoload :Client, "anpost_api/sftp/client"
-    autoload :Report, "anpost_api/sftp/report"
+    autoload :Client, "an_post_return/sftp/client"
+    autoload :Report, "an_post_return/sftp/report"
   end
 end

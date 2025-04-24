@@ -6,7 +6,7 @@ require_relative "configuration"
 require_relative "errors"
 require_relative "resources/return_label"
 
-module AnpostAPI
+module AnPostReturn
   class Client
     attr_reader :config, :connection
 

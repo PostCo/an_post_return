@@ -3,7 +3,7 @@ require "net/ssh/proxy/http"
 require "tempfile"
 require "csv"
 
-module AnpostAPI
+module AnPostReturn
   class SFTPClient
     # SFTP connection configuration
     attr_reader :host, :username, :password, :proxy_config
@@ -29,13 +29,13 @@ module AnpostAPI
     # Establish SFTP connection
     #
     # @return [Boolean] true if connection successful, false otherwise
-    # @raise [AnpostAPI::ConnectionError] if connection fails
+    # @raise [AnPostReturn::ConnectionError] if connection fails
     def connect
       sftp_client.connect!
       @connected = true
       true
     rescue Net::SSH::Exception => e
-      raise AnpostAPI::ConnectionError, "Failed to connect to #{host}: #{e.message}"
+      raise AnPostReturn::ConnectionError, "Failed to connect to #{host}: #{e.message}"
     end
 
     # Close SFTP connection
@@ -54,7 +54,7 @@ module AnpostAPI
     # @param remote_path [String] Path to file on SFTP server
     # @yield [Tempfile] Temporary file containing downloaded content
     # @return [Tempfile, Object] If block given, returns block result; otherwise returns Tempfile
-    # @raise [AnpostAPI::FileError] if file download fails
+    # @raise [AnPostReturn::FileError] if file download fails
     def read_file(remote_path)
       ensure_connected
       temp_file = Tempfile.new(["sftp", File.extname(remote_path)])
@@ -63,7 +63,7 @@ module AnpostAPI
         sftp_client.download!(remote_path, temp_file.path)
         block_given? ? yield(temp_file) : temp_file
       rescue Net::SFTP::StatusException => e
-        raise AnpostAPI::FileError, "Failed to download #{remote_path}: #{e.message}"
+        raise AnPostReturn::FileError, "Failed to download #{remote_path}: #{e.message}"
       ensure
         unless block_given?
           temp_file.close
@@ -77,7 +77,7 @@ module AnpostAPI
     # @param remote_path [String] Remote directory path
     # @param glob_pattern [String, nil] Optional glob pattern for filtering files
     # @return [Array<Net::SFTP::Protocol::V01::Name>] Array of file entries
-    # @raise [AnpostAPI::FileError] if listing files fails
+    # @raise [AnPostReturn::FileError] if listing files fails
     def list_files(remote_path, glob_pattern = nil)
       ensure_connected
       entries = []
@@ -90,7 +90,7 @@ module AnpostAPI
         end
         entries
       rescue Net::SFTP::StatusException => e
-        raise AnpostAPI::FileError, "Failed to list files in #{remote_path}: #{e.message}"
+        raise AnPostReturn::FileError, "Failed to list files in #{remote_path}: #{e.message}"
       end
     end
 
@@ -118,7 +118,7 @@ module AnpostAPI
     end
 
     def ensure_connected
-      raise AnpostAPI::ConnectionError, "Not connected to SFTP server" unless @connected
+      raise AnPostReturn::ConnectionError, "Not connected to SFTP server" unless @connected
     end
   end
 end

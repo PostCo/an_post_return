@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module AnpostAPI
+module AnPostReturn
   class Configuration
     attr_accessor :test
     attr_accessor :proxy_host, :proxy_port, :proxy_username, :proxy_password

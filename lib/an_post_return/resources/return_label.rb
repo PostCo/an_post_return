@@ -1,4 +1,4 @@
-module AnpostAPI
+module AnPostReturn
   module Resources
     class ReturnLabel
       attr_reader :client
