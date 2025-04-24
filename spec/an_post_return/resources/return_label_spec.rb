@@ -146,7 +146,7 @@ RSpec.describe AnPostReturn::Resources::ReturnLabel do
     end
 
     context "when the API returns an error with status 200" do
-      let(:error_response) { { "errors" => [{ "message" => "Invalid parameters" }] } }
+      let(:error_response) { { "success" => false, "errors" => [{ "message" => "Invalid parameters" }] } }
 
       before do
         stub_request(:post, "#{client.config.api_base_url}/returnsLabel").with(
