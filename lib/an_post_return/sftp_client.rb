@@ -2,6 +2,7 @@ require "net/sftp"
 require "net/ssh/proxy/http"
 require "tempfile"
 require "csv"
+require "x25519"
 
 module AnPostReturn
   class SFTPClient

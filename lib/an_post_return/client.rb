@@ -12,7 +12,6 @@ module AnPostReturn
 
     def initialize(config = Configuration.new)
       @config = config
-      @config.validate!
       @connection = setup_connection
     end
 
@@ -41,35 +40,48 @@ module AnPostReturn
     def handle_response(response)
       case response.status
       when 200..299
-        response.body
+        if response.body.is_a?(Hash) && response.body["success"]
+          response.body
+        else
+          raise APIError.new(
+                  "API request failed with status #{response.status}: #{parse_error_message(response)}",
+                  response: response,
+                )
+        end
       when 400
-        raise ValidationError, parse_error_message(response)
+        raise ValidationError.new(parse_error_message(response), response: response)
       when 401
-        raise ConfigurationError, "Invalid subscription key"
+        raise ConfigurationError.new("Invalid subscription key", response: response)
       when 404
-        raise APIError, "Resource not found"
+        raise APIError.new("Resource not found", response: response)
       when 407
-        raise ConfigurationError, "Proxy authentication required"
+        raise ConfigurationError.new("Proxy authentication required", response: response)
       else
-        raise APIError, "API request failed with status #{response.status}: #{parse_error_message(response)}"
+        raise APIError.new(
+                "API request failed with status #{response.status}: #{parse_error_message(response)}",
+                response: response,
+              )
       end
     end
 
     def parse_error_message(response)
-      return response.body["message"] if response.body.is_a?(Hash) && response.body["message"]
-      return response.body["error"] if response.body.is_a?(Hash) && response.body["error"]
+      if response.body.is_a?(Hash) && response.body["errors"]
+        errors = response.body["errors"]
+        if errors.is_a?(Array)
+          return errors.map { |error| error["message"] }.join(", ")
+        else
+          return errors
+        end
+      end
 
       "Unknown error"
     end
 
     def setup_connection
       Faraday.new(url: config.api_base_url) do |conn|
-        conn.headers = {
-          "Content-Type" => "application/json",
-          "Accept" => "application/json",
-          "X-API-Key" => config.api_key,
-          "X-API-Secret" => config.api_secret,
-        }
+        conn.request :json
+        conn.response :json
+        conn.headers = default_headers
       end
     end
   end

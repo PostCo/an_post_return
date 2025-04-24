@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-require "anpost_api"
+require "an_post_return"
+require "webmock/rspec"
+
+WebMock.disable_net_connect!
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

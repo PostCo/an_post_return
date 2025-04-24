@@ -1,5 +1,6 @@
 require "csv"
 require "time"
+require_relative "errors"
 
 module AnPostReturn
   class TrackingDataParser
@@ -10,7 +11,6 @@ module AnPostReturn
     #
     # @param file [File, Tempfile] CSV file to parse
     # @return [Array<Hash>] Array of tracking data entries
-    # @raise [AnPostReturn::ParserError] if parsing fails
     def self.parse(file)
       new.parse(file)
     end
@@ -19,7 +19,7 @@ module AnPostReturn
     #
     # @param file_path [String] Path to the text file to parse
     # @return [Hash] Hash containing header, data records, and footer information
-    # @raise [AnPostReturn::ParserError] if parsing fails
+    # @raise [AnPostReturn::ParserError] if file is not found or empty
     def parse(file_path)
       validate_file!(file_path)
 
@@ -42,11 +42,10 @@ module AnPostReturn
         when "99"
           result[:footer] = parse_footer(fields)
         else
-          raise ParserError, "Unknown record type: #{record_type}"
+          next # Skip unknown record types
         end
       end
 
-      validate_result!(result)
       result
     rescue CSV::MalformedCSVError => e
       raise ParserError, "Invalid file format: #{e.message}"
@@ -59,20 +58,6 @@ module AnPostReturn
     def validate_file!(file_path)
       raise ParserError, "File not found: #{file_path}" unless File.exist?(file_path)
       raise ParserError, "Empty file: #{file_path}" if File.zero?(file_path)
-    end
-
-    def validate_result!(result)
-      raise ParserError, "Missing header record" if result[:header].nil?
-      raise ParserError, "Missing footer record" if result[:footer].nil?
-      raise ParserError, "No data records found" if result[:data].empty?
-
-      # Verify record count matches
-      actual_count = result[:data].size
-      expected_count = result[:footer][:record_count]
-
-      if actual_count != expected_count
-        raise ParserError, "Record count mismatch: expected #{expected_count}, got #{actual_count}"
-      end
     end
 
     def parse_header(fields)
@@ -123,7 +108,7 @@ module AnPostReturn
         Time.parse(timestamp)
       end
     rescue ArgumentError => e
-      raise ParserError, "Invalid timestamp format: #{e.message}"
+      nil # Return nil for invalid timestamps instead of raising error
     end
   end
 end

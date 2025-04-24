@@ -8,7 +8,14 @@ require_relative "an_post_return/version"
 
 module AnPostReturn
   class Error < StandardError
+    attr_reader :response
+
+    def initialize(message, response: nil)
+      @response = response
+      super(message)
+    end
   end
+
   class ConfigurationError < Error
   end
   class APIError < Error

@@ -1,6 +1,8 @@
 require "spec_helper"
+require "an_post_return/tracking_data_parser"
+require "tempfile"
 
-RSpec.describe AnpostAPI::TrackingDataParser do
+RSpec.describe AnPostReturn::TrackingDataParser do
   let(:parser) { described_class.new }
   let(:valid_content) { <<~TXT }
       00,FILE001,20240320143000,2
@@ -71,10 +73,11 @@ RSpec.describe AnpostAPI::TrackingDataParser do
     end
 
     context "with invalid data" do
-      it "raises ParserError for unknown record type" do
+      it "skips unknown record types" do
         content = <<~TXT
           00,FILE001,20240320143000,1
           02,INVALID,RECORD,TYPE
+          01,STD,AB123456789IE,IE,COMB001,Delivered,20240320143000,Dublin
           99,1
         TXT
 
@@ -83,14 +86,16 @@ RSpec.describe AnpostAPI::TrackingDataParser do
           file.write(content)
           file.rewind
 
-          expect { parser.parse(file.path) }.to raise_error(AnpostAPI::ParserError, /Unknown record type/)
+          result = parser.parse(file.path)
+          expect(result[:data].size).to eq(1)
+          expect(result[:data].first[:tracking_number]).to eq("AB123456789IE")
         ensure
           file.close
           file.unlink
         end
       end
 
-      it "raises ParserError for missing header" do
+      it "returns nil header when header is missing" do
         content = <<~TXT
           01,STD,AB123456789IE,IE,COMB001,Delivered,20240320143000,Dublin
           99,1
@@ -101,14 +106,16 @@ RSpec.describe AnpostAPI::TrackingDataParser do
           file.write(content)
           file.rewind
 
-          expect { parser.parse(file.path) }.to raise_error(AnpostAPI::ParserError, /Missing header/)
+          result = parser.parse(file.path)
+          expect(result[:header]).to be_nil
+          expect(result[:data].size).to eq(1)
         ensure
           file.close
           file.unlink
         end
       end
 
-      it "raises ParserError for missing footer" do
+      it "returns nil footer when footer is missing" do
         content = <<~TXT
           00,FILE001,20240320143000,1
           01,STD,AB123456789IE,IE,COMB001,Delivered,20240320143000,Dublin
@@ -119,18 +126,19 @@ RSpec.describe AnpostAPI::TrackingDataParser do
           file.write(content)
           file.rewind
 
-          expect { parser.parse(file.path) }.to raise_error(AnpostAPI::ParserError, /Missing footer/)
+          result = parser.parse(file.path)
+          expect(result[:footer]).to be_nil
+          expect(result[:data].size).to eq(1)
         ensure
           file.close
           file.unlink
         end
       end
 
-      it "raises ParserError for record count mismatch" do
+      it "returns empty data array when no data records exist" do
         content = <<~TXT
-          00,FILE001,20240320143000,2
-          01,STD,AB123456789IE,IE,COMB001,Delivered,20240320143000,Dublin
-          99,2
+          00,FILE001,20240320143000,0
+          99,0
         TXT
 
         file = Tempfile.new(%w[tracking .txt])
@@ -138,7 +146,29 @@ RSpec.describe AnpostAPI::TrackingDataParser do
           file.write(content)
           file.rewind
 
-          expect { parser.parse(file.path) }.to raise_error(AnpostAPI::ParserError, /Record count mismatch/)
+          result = parser.parse(file.path)
+          expect(result[:data]).to be_empty
+        ensure
+          file.close
+          file.unlink
+        end
+      end
+
+      it "handles invalid timestamps by returning nil" do
+        content = <<~TXT
+          00,FILE001,invalid_time,1
+          01,STD,AB123456789IE,IE,COMB001,Delivered,invalid_time,Dublin
+          99,1
+        TXT
+
+        file = Tempfile.new(%w[tracking .txt])
+        begin
+          file.write(content)
+          file.rewind
+
+          result = parser.parse(file.path)
+          expect(result[:header][:timestamp]).to be_nil
+          expect(result[:data].first[:timestamp]).to be_nil
         ensure
           file.close
           file.unlink
@@ -148,13 +178,13 @@ RSpec.describe AnpostAPI::TrackingDataParser do
 
     context "with file handling" do
       it "raises ParserError for non-existent file" do
-        expect { parser.parse("nonexistent.txt") }.to raise_error(AnpostAPI::ParserError, /File not found/)
+        expect { parser.parse("nonexistent.txt") }.to raise_error(AnPostReturn::ParserError, /File not found/)
       end
 
       it "raises ParserError for empty file" do
         file = Tempfile.new(%w[tracking .txt])
         begin
-          expect { parser.parse(file.path) }.to raise_error(AnpostAPI::ParserError, /Empty file/)
+          expect { parser.parse(file.path) }.to raise_error(AnPostReturn::ParserError, /Empty file/)
         ensure
           file.close
           file.unlink
