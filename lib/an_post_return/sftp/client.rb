@@ -66,7 +66,11 @@ module AnPostReturn
           sftp_client.download!(remote_path, temp_file.path)
           block_given? ? yield(temp_file) : temp_file
         rescue Net::SFTP::StatusException => e
-          raise FileError, "Failed to download #{remote_path}: #{e.message}"
+          if e.message.include?("no such file")
+            raise FileNotFoundError
+          else
+            raise FileError, "Failed to download #{remote_path}: #{e.message}"
+          end
         ensure
           unless block_given?
             temp_file.close

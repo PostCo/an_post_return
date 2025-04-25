@@ -3,14 +3,11 @@
 module AnPostReturn
   class Configuration
     attr_accessor :test
-    attr_accessor :proxy_host, :proxy_port, :proxy_username, :proxy_password
+    attr_accessor :proxy_config
 
     def initialize
       @test = false
-      @proxy_host = nil
-      @proxy_port = nil
-      @proxy_username = nil
-      @proxy_password = nil
+      @proxy_config = nil
     end
 
     def api_base_url
@@ -22,14 +19,14 @@ module AnPostReturn
     end
 
     def proxy_configured?
-      !proxy_host.nil? && !proxy_port.nil?
+      !proxy_config.nil?
     end
 
     def proxy_uri
       return nil unless proxy_configured?
 
-      uri = "http://#{proxy_host}:#{proxy_port}"
-      uri = "http://#{proxy_username}:#{proxy_password}@#{proxy_host}:#{proxy_port}" if proxy_username && proxy_password
+      uri = "http://#{proxy_config[:host]}:#{proxy_config[:port]}"
+      uri = "http://#{proxy_config[:user]}:#{proxy_config[:password]}@#{proxy_config[:host]}:#{proxy_config[:port]}" if proxy_config[:user] && proxy_config[:password]
       URI.parse(uri)
     end
   end

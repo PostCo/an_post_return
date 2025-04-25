@@ -95,6 +95,9 @@ content = client.read_file('path/to/file.txt')
 puts content
 ```
 
+tracking statuses
+"SORTED", "ATTEMPTED DELIVERY", "DELIVERED", "ITEM ON HAND", "PRE-ADVICE", "OUT FOR DELIVERY", "ITEM ACCEPTED", "CUSTOMER INSTRUCTION REC"
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

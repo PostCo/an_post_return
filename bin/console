@@ -2,10 +2,36 @@
 # frozen_string_literal: true
 
 require "bundler/setup"
-require "anpost_api"
-
+require "an_post_return"
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
+require "dotenv"
+Dotenv.load
+
+AnPostReturn.configure do |config|
+  config.test = true
+  config.proxy_config = {
+    host: ENV["PROXY_HOST"],
+    port: ENV["PROXY_PORT"],
+    username: ENV["PROXY_USERNAME"],
+    password: ENV["PROXY_PASSWORD"]
+  }
+end
 
 require "irb"
+require "pry"
+
+@tracker = AnPostReturn::Tracker.new(
+  host: ENV["SFTP_HOST"],
+  username: ENV["SFTP_USERNAME"],
+  password: ENV["SFTP_PASSWORD"],
+  remote_path: ENV["SFTP_REMOTE_PATH"]
+)
+
+@tracker.track do |file, data|
+  puts "File: #{file}"
+  puts "Data: #{data}"
+end
+
+
 IRB.start(__FILE__)

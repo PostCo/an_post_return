@@ -6,5 +6,7 @@ module AnPostReturn
     end
     class FileError < Error
     end
+    class FileNotFoundError < FileError
+    end
   end
 end

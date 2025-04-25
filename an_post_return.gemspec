@@ -35,8 +35,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Dependencies
-  spec.add_dependency "net-sftp", "~> 3.0"
+  # for sftp ssh connection key encryption
   spec.add_dependency "x25519", ">= 1.0.7"
+  spec.add_dependency "ed25519", "~> 1.2", ">= 1.2.4"
+  spec.add_dependency "bcrypt_pbkdf", "~> 1.0", ">= 1.0.2"
+
+  spec.add_dependency "net-sftp", "~> 3.0"
   spec.add_dependency "faraday", "~> 2.0"
   spec.add_dependency "json", "~> 2.6"
   spec.add_dependency "csv", "~> 3.2"
@@ -48,6 +52,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "standard", "~> 1.3"
   spec.add_development_dependency "webmock", "~> 3.18"
   spec.add_development_dependency "pry", "~> 0.14"
+  spec.add_development_dependency "dotenv", "~> 2.8"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

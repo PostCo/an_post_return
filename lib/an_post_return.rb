@@ -47,8 +47,10 @@ module AnPostReturn
   module Resources
     autoload :Base, "an_post_return/resources/base"
     autoload :ReturnLabel, "an_post_return/resources/return_label"
-    autoload :Tracking, "an_post_return/resources/tracking"
   end
+
+  # Autoload tracker
+  autoload :Tracker, "an_post_return/tracker"
 
   # Autoload SFTP related classes
   module SFTP
