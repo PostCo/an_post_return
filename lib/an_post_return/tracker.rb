@@ -5,16 +5,9 @@ require_relative "configuration"
 module AnPostReturn
   class Tracker
     # Initialize a new Tracking resource
-    #
-    # @param host [String] SFTP server hostname
-    # @param username [String] SFTP username
-    # @param password [String] SFTP password
-    # @param remote_path [String] Base remote path for tracking files
-    def initialize(host:, username:, password:, remote_path:)
-      @host = host
-      @username = username
-      @password = password
-      @remote_path = remote_path
+    def initialize
+      @config = AnPostReturn.configuration
+      raise ArgumentError, "SFTP configuration is not set" unless @config.sftp_configured?
     end
 
     # Track files with a specific account number
@@ -31,9 +24,9 @@ module AnPostReturn
       with_sftp_client do |sftp_client|
         file =
           if last.zero?
-            sftp_client.list_files(@remote_path, "cdt#{account_number}*").first
+            sftp_client.list_files(@config.sftp_config[:remote_path], "cdt#{account_number}*").first
           else
-            sftp_client.list_files(@remote_path, "cdt#{account_number}*")[-(last + 1)]
+            sftp_client.list_files(@config.sftp_config[:remote_path], "cdt#{account_number}*")[-(last + 1)]
           end
         track_from(file.name, sftp_client, &block) if file
       end
@@ -87,8 +80,13 @@ module AnPostReturn
       if existing_sftp_client
         client = existing_sftp_client
       else
-        config = AnPostReturn.configuration
-        client = SFTP::Client.new(@host, @username, @password, config.proxy_config)
+        client =
+          SFTP::Client.new(
+            @config.sftp_config[:host],
+            @config.sftp_config[:username],
+            @config.sftp_config[:password],
+            @config.proxy_config,
+          )
         client.connect
       end
       yield client

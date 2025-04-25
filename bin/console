@@ -16,32 +16,32 @@ AnPostReturn.configure do |config|
     username: ENV["PROXY_USERNAME"],
     password: ENV["PROXY_PASSWORD"],
   }
+  config.sftp_config = {
+    host: ENV["SFTP_HOST"],
+    username: ENV["SFTP_USERNAME"],
+    password: ENV["SFTP_PASSWORD"],
+    remote_path: ENV["SFTP_REMOTE_PATH"],
+  }
 end
 
 require "irb"
 require "pry"
 
-@tracker =
-  AnPostReturn::Tracker.new(
-    host: ENV["SFTP_HOST"],
-    username: ENV["SFTP_USERNAME"],
-    password: ENV["SFTP_PASSWORD"],
-    remote_path: ENV["SFTP_REMOTE_PATH"],
-  )
+# @tracker = AnPostReturn::Tracker.new
 
-@tracker.track_from("cdt0370132115864.txt") do |file, data|
-  puts "File: #{file}"
-  puts "Data: #{data}"
-end
+# @tracker.track_from("cdt0370132115864.txt") do |file, data|
+#   puts "File: #{file}"
+#   puts "Data: #{data}"
+# end
 
-@tracker.track_with_account_number("3795540") do |file, data|
-  puts "File: #{file}"
-  puts "Data: #{data}"
-end
+# @tracker.track_with_account_number("3795540") do |file, data|
+#   puts "File: #{file}"
+#   puts "Data: #{data}"
+# end
 
-@tracker.track_with_account_number("3795540", last: 2) do |file, data|
-  puts "File: #{file}"
-  puts "Data: #{data}"
-end
+# @tracker.track_with_account_number("3795540", last: 2) do |file, data|
+#   puts "File: #{file}"
+#   puts "Data: #{data}"
+# end
 
 IRB.start(__FILE__)
