@@ -10,6 +10,7 @@ Dotenv.load
 
 AnPostReturn.configure do |config|
   config.test = true
+  config.subscription_key = ENV["AN_POST_SUBSCRIPTION_KEY"]
   config.proxy_config = {
     host: ENV["PROXY_HOST"],
     port: ENV["PROXY_PORT"],

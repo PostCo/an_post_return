@@ -34,7 +34,7 @@ module AnPostReturn
     private
 
     def default_headers
-      { "Content-Type" => "application/json", "Accept" => "application/json" }
+      { "Content-Type" => "application/json", "Accept" => "application/json", "Ocp-Apim-Subscription-Key" => config.subscription_key }
     end
 
     def handle_response(response)

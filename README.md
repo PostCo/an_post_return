@@ -37,6 +37,9 @@ Configure the gem with your An Post credentials:
 
 ```ruby
 AnPostReturn.configure do |config|
+  # API Configuration (required)
+  config.subscription_key = 'your_subscription_key'  # The Ocp-Apim-Subscription-Key for authentication
+
   # SFTP Configuration (required)
   config.sftp_config = {
     host: 'your_sftp_host',
@@ -64,34 +67,32 @@ end
 
 ```ruby
 # Initialize a new return label request
-label = AnPostReturn::ReturnLabel.create(
-  # Required parameters
-  contract_number: "123456",
-  product_code: "DOM",  # DOM for domestic, EU for European Union, INT for International
-  weight: 1.5,  # Weight in kilograms
-
-  # Address details
-  from_address: {
-    name: "Sender Name",
-    address_line_1: "123 Sender Street",
-    city: "Dublin",
-    county: "Dublin",
-    postcode: "D01 F5P2",
-    country: "IE"
+client = AnPostReturn::Client.new
+response = client.return_labels.create(
+  output_response_type: "Label",
+  sender: {
+    first_name: "Jane",
+    last_name: "Smith",
+    contact_number: "0871234567",
+    email_address: "test@email.com"
   },
-  to_address: {
-    name: "Recipient Name",
-    address_line_1: "456 Recipient Road",
-    city: "Cork",
-    county: "Cork",
-    postcode: "T12 RX8C",
-    country: "IE"
-  }
+  sender_address: {
+    address_line1: "Exo Building",
+    address_line2: "North Wall Quay",
+    city: "Dublin 1",
+    eircode: "D01 W5Y2",
+    county: "Dublin",
+    country: "Ireland",
+    countrycode: "IE"
+  },
+  retailer_account_no: "your_account_number",
+  retailer_return_reason: "Does not fit",
+  retailer_order_number: "987654321"
 )
 
-# Access the label details
-puts label.tracking_number  # The An Post tracking number for this shipment
-puts label.label_url       # URL to download the generated label
+# Access the response data
+puts response["trackingNumber"]  # The An Post tracking number for this shipment
+puts response["labelData"]       # The label data (usually a PDF bitstream)
 ```
 
 ### Tracking Shipments

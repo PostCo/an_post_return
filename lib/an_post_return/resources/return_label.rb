@@ -9,7 +9,6 @@ module AnPostReturn
 
       # Create a return label
       # @param params [Hash] The parameters for creating a return label
-      # @param subscription_key [String] The Ocp-Apim-Subscription-Key for authentication
       # @option params [String] :output_response_type Type of response ('Label')
       # @option params [Hash] :sender Sender information
       #   @option sender [String] :first_name Sender's first name
@@ -110,14 +109,11 @@ module AnPostReturn
       #     retailer_return_reason: "Does not fit",
       #     retailer_order_number: "321654987"
       #   })
-      def create(params, subscription_key)
-        response =
-          client
-            .connection
-            .post("returnsLabel") do |req|
-              req.body = params
-              req.headers["Ocp-Apim-Subscription-Key"] = subscription_key
-            end
+      def create(params)
+        raise ArgumentError, "Missing required parameters" if params.nil?
+        raise ArgumentError, "Subscription key not configured" if client.config.subscription_key.nil?
+
+        response = client.connection.post("returnsLabel") { |req| req.body = params }
         client.send(:handle_response, response)
       end
     end

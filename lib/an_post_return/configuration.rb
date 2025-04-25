@@ -5,11 +5,13 @@ module AnPostReturn
     attr_accessor :test
     attr_accessor :proxy_config
     attr_accessor :sftp_config
+    attr_accessor :subscription_key
 
     def initialize
       @test = false
       @proxy_config = nil
       @sftp_config = nil
+      @subscription_key = nil
     end
 
     def api_base_url
