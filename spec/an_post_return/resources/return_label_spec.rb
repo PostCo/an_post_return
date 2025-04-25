@@ -69,6 +69,7 @@ RSpec.describe AnPostReturn::Resources::ReturnLabelResource do
         expect(result.label_data).to eq("[PDF bitstream]")
         expect(result.pos_label_printing_barcode).to eq("PSS502177250027472")
         expect(result.success).to be true
+        expect(result.success?).to be true
         expect(result.transaction_reference).to eq("PSS50217725")
         expect(result.errors).to be_empty
       end
@@ -91,6 +92,7 @@ RSpec.describe AnPostReturn::Resources::ReturnLabelResource do
         expect(result.label_data).to eq("[PDF bitstream]")
         expect(result.pos_label_printing_barcode).to eq("PSS502177250027472")
         expect(result.success).to be true
+        expect(result.success?).to be true
         expect(result.transaction_reference).to eq("PSS50217725")
         expect(result.errors).to be_empty
       end
@@ -135,6 +137,7 @@ RSpec.describe AnPostReturn::Resources::ReturnLabelResource do
         expect(result.label_data).to eq("[PDF bitstream]")
         expect(result.pos_label_printing_barcode).to eq("PSS502177250027472")
         expect(result.success).to be true
+        expect(result.success?).to be true
         expect(result.transaction_reference).to eq("PSS50217725")
         expect(result.errors).to be_empty
       end

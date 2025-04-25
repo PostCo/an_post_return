@@ -5,6 +5,7 @@ require "json"
 require "net/sftp"
 
 require_relative "an_post_return/version"
+require_relative "an_post_return/errors"
 
 module AnPostReturn
   class << self
@@ -16,10 +17,6 @@ module AnPostReturn
 
     def configure
       yield(configuration)
-    end
-
-    def reset
-      @configuration = Configuration.new
     end
   end
 
