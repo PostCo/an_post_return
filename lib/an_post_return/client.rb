@@ -4,7 +4,6 @@ require "faraday"
 require "json"
 require_relative "configuration"
 require_relative "errors"
-require_relative "resources/return_label"
 
 module AnPostReturn
   class Client
@@ -15,7 +14,7 @@ module AnPostReturn
     end
 
     def return_labels
-      @return_labels ||= Resources::ReturnLabel.new(self)
+      @return_labels ||= Resources::ReturnLabelResource.new(self)
     end
 
     def connection

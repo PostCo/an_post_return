@@ -1,11 +1,14 @@
 require "spec_helper"
-require "an_post_return/resources/return_label"
-require "webmock/rspec"
+# require "an_post_return/resources/return_label"
 
-RSpec.describe AnPostReturn::Resources::ReturnLabel do
+RSpec.describe AnPostReturn::Resources::ReturnLabelResource do
+  let(:subscription_key) { "test_subscription_key" }
   let(:client) { AnPostReturn::Client.new }
   let(:return_label) { described_class.new(client) }
-  let(:subscription_key) { "test_subscription_key" }
+
+  before { AnPostReturn.configure { |config| config.subscription_key = subscription_key } }
+
+  after { AnPostReturn.configure { |config| config.subscription_key = nil } }
 
   describe "#create" do
     let(:base_params) do
@@ -59,9 +62,15 @@ RSpec.describe AnPostReturn::Resources::ReturnLabel do
         ).to_return(status: 200, body: success_response.to_json, headers: { "Content-Type" => "application/json" })
       end
 
-      it "sends the correct request and returns the response" do
-        response = return_label.create(base_params, subscription_key)
-        expect(response).to eq(success_response)
+      it "sends the correct request and returns a ReturnLabel object" do
+        result = return_label.create(base_params)
+        expect(result).to be_a(AnPostReturn::ReturnLabel)
+        expect(result.tracking_number).to eq("CH000100026IE")
+        expect(result.label_data).to eq("[PDF bitstream]")
+        expect(result.pos_label_printing_barcode).to eq("PSS502177250027472")
+        expect(result.success).to be true
+        expect(result.transaction_reference).to eq("PSS50217725")
+        expect(result.errors).to be_empty
       end
     end
 
@@ -75,9 +84,15 @@ RSpec.describe AnPostReturn::Resources::ReturnLabel do
         ).to_return(status: 200, body: success_response.to_json, headers: { "Content-Type" => "application/json" })
       end
 
-      it "sends the correct request with security declaration items" do
-        response = return_label.create(eu_params, subscription_key)
-        expect(response).to eq(success_response)
+      it "sends the correct request and returns a ReturnLabel object" do
+        result = return_label.create(eu_params)
+        expect(result).to be_a(AnPostReturn::ReturnLabel)
+        expect(result.tracking_number).to eq("CH000100026IE")
+        expect(result.label_data).to eq("[PDF bitstream]")
+        expect(result.pos_label_printing_barcode).to eq("PSS502177250027472")
+        expect(result.success).to be true
+        expect(result.transaction_reference).to eq("PSS50217725")
+        expect(result.errors).to be_empty
       end
     end
 
@@ -113,9 +128,15 @@ RSpec.describe AnPostReturn::Resources::ReturnLabel do
         ).to_return(status: 200, body: success_response.to_json, headers: { "Content-Type" => "application/json" })
       end
 
-      it "sends the correct request with customs information" do
-        response = return_label.create(non_eu_params, subscription_key)
-        expect(response).to eq(success_response)
+      it "sends the correct request and returns a ReturnLabel object" do
+        result = return_label.create(non_eu_params)
+        expect(result).to be_a(AnPostReturn::ReturnLabel)
+        expect(result.tracking_number).to eq("CH000100026IE")
+        expect(result.label_data).to eq("[PDF bitstream]")
+        expect(result.pos_label_printing_barcode).to eq("PSS502177250027472")
+        expect(result.success).to be true
+        expect(result.transaction_reference).to eq("PSS50217725")
+        expect(result.errors).to be_empty
       end
     end
 
@@ -138,7 +159,7 @@ RSpec.describe AnPostReturn::Resources::ReturnLabel do
       end
 
       it "raises an APIError" do
-        expect { return_label.create(base_params, subscription_key) }.to raise_error(
+        expect { return_label.create(base_params) }.to raise_error(
           AnPostReturn::ValidationError,
           "The Direct Returns Retailer with Account Number: 37408681 cannot be found",
         )
@@ -156,7 +177,7 @@ RSpec.describe AnPostReturn::Resources::ReturnLabel do
       end
 
       it "raises an APIError" do
-        expect { return_label.create(base_params, subscription_key) }.to raise_error(
+        expect { return_label.create(base_params) }.to raise_error(
           AnPostReturn::APIError,
           "API request failed with status 200: Invalid parameters",
         )

@@ -7,22 +7,6 @@ require "net/sftp"
 require_relative "an_post_return/version"
 
 module AnPostReturn
-  class Error < StandardError
-    attr_reader :response
-
-    def initialize(message, response: nil)
-      @response = response
-      super(message)
-    end
-  end
-
-  class ConfigurationError < Error
-  end
-  class APIError < Error
-  end
-  class ValidationError < Error
-  end
-
   class << self
     attr_writer :configuration
 
@@ -53,7 +37,7 @@ module AnPostReturn
   # Autoload resource classes
   module Resources
     autoload :Base, "an_post_return/resources/base"
-    autoload :ReturnLabel, "an_post_return/resources/return_label"
+    autoload :ReturnLabelResource, "an_post_return/resources/return_label_resource"
   end
 
   # Autoload SFTP related classes

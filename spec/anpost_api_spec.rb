@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe AnpostApi do
+RSpec.describe AnPostReturn do
   it "has a version number" do
-    expect(AnpostApi::VERSION).not_to be nil
-  end
-
-  it "does something useful" do
-    expect(false).to eq(true)
+    expect(AnPostReturn::VERSION).not_to be nil
   end
 end

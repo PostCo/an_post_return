@@ -2,11 +2,15 @@
 
 require "active_support"
 require "active_support/core_ext/string"
+require "active_support/hash_with_indifferent_access"
 require "ostruct"
 
 module AnPostReturn
   class Base < OpenStruct
+    attr_reader :original_response
+
     def initialize(attributes)
+      @original_response = attributes
       super to_ostruct(attributes)
     end
 
@@ -18,6 +22,11 @@ module AnPostReturn
       else # Assumed to be a primitive value
         obj
       end
+    end
+
+    # Return the original response with camelCase keys preserved
+    def response
+      @original_response
     end
 
     # Convert back to hash without table key, including nested structures
@@ -46,11 +55,13 @@ module AnPostReturn
       case object
       when OpenStruct
         hash = object.to_h.reject { |k, _| k == :table }
-        hash.transform_values { |value| ostruct_to_hash(value) }
+        # Convert to HashWithIndifferentAccess and process values recursively
+        ActiveSupport::HashWithIndifferentAccess.new(hash).transform_values { |value| ostruct_to_hash(value) }
       when Array
         object.map { |item| ostruct_to_hash(item) }
       when Hash
-        object.transform_values { |value| ostruct_to_hash(value) }
+        # Convert to HashWithIndifferentAccess and process values recursively
+        ActiveSupport::HashWithIndifferentAccess.new(object).transform_values { |value| ostruct_to_hash(value) }
       else
         object
       end

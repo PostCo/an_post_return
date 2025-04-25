@@ -49,7 +49,7 @@
     },
     {
       "taskId": 6,
-      "taskTitle": "Implement ReturnLabel resource",
+      "taskTitle": "Implement ReturnLabelResource resource",
       "complexityScore": 5,
       "recommendedSubtasks": 5,
       "expansionPrompt": "Divide the implementation of an API resource class for generating return labels with validation, request formatting, and response handling into clear steps",
@@ -97,11 +97,11 @@
     },
     {
       "taskId": 12,
-      "taskTitle": "Implement RSpec tests for ReturnLabel resource",
+      "taskTitle": "Implement RSpec tests for ReturnLabelResource resource",
       "complexityScore": 6,
       "recommendedSubtasks": 6,
-      "expansionPrompt": "Divide the implementation of RSpec tests for the ReturnLabel resource with API interaction testing into specific test groups and fixtures",
-      "reasoning": "Testing the ReturnLabel resource has higher complexity due to API interaction, VCR setup, fixture creation, and various test scenarios. Six subtasks would cover test setup, fixture creation, parameter validation tests, successful request tests, error handling tests, and integration tests."
+      "expansionPrompt": "Divide the implementation of RSpec tests for the ReturnLabelResource resource with API interaction testing into specific test groups and fixtures",
+      "reasoning": "Testing the ReturnLabelResource resource has higher complexity due to API interaction, VCR setup, fixture creation, and various test scenarios. Six subtasks would cover test setup, fixture creation, parameter validation tests, successful request tests, error handling tests, and integration tests."
     },
     {
       "taskId": 13,

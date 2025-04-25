@@ -1,7 +1,7 @@
 require_relative "../objects/return_label"
 module AnPostReturn
   module Resources
-    class ReturnLabel
+    class ReturnLabelResource
       attr_reader :client
 
       def initialize(client)
