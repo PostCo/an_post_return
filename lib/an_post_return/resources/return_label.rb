@@ -1,3 +1,4 @@
+require_relative "../objects/return_label"
 module AnPostReturn
   module Resources
     class ReturnLabel
@@ -43,7 +44,7 @@ module AnPostReturn
       #     @option customs_content_items [Float] :value_amount Item value
       #     @option customs_content_items [Float] :weight Item weight
       #     @option customs_content_items [String] :country_of_origin Country of origin code
-      # @return [Hash] The created return label data
+      # @return [AReturnLabel] The created return label data
       #
       # @example Create a domestic return label
       #   client.return_labels.create({
@@ -114,7 +115,8 @@ module AnPostReturn
         raise ArgumentError, "Subscription key not configured" if client.config.subscription_key.nil?
 
         response = client.connection.post("returnsLabel") { |req| req.body = params }
-        client.send(:handle_response, response)
+        response_data = client.send(:handle_response, response)
+        ReturnLabel.new(response_data)
       end
     end
   end
