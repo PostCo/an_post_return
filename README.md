@@ -68,7 +68,7 @@ end
 ```ruby
 # Initialize a new return label request
 client = AnPostReturn::Client.new
-response = client.return_labels.create(
+return_label = client.return_labels.create(
   output_response_type: "Label",
   sender: {
     first_name: "Jane",
@@ -91,8 +91,8 @@ response = client.return_labels.create(
 )
 
 # Access the response data
-puts response["trackingNumber"]  # The An Post tracking number for this shipment
-puts response["labelData"]       # The label data (usually a PDF bitstream)
+puts return_label.tracking_number  # The An Post tracking number for this shipment
+puts return_label.label_data      # The label data (usually a PDF bitstream)
 ```
 
 ### Tracking Shipments
