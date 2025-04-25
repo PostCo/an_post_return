@@ -1,12 +1,13 @@
 # AnPostReturn
 
-A Ruby gem for integrating with An Post's return label generation service. This gem provides a simple interface for creating return labels for domestic, EU, and non-EU returns through An Post's SFTP service.
+A Ruby gem for integrating with An Post's return label generation and tracking service. This gem provides a simple interface for creating return labels for domestic, EU, and non-EU returns, and tracking through An Post's SFTP service.
 
 ## Features
 
 - Generate return labels for domestic, EU, and non-EU returns
 - SFTP integration for secure file transfer
 - Simple configuration options
+- Proxy option for An Post IP whitelisting purpose
 - Robust error handling
 - Comprehensive tracking data parsing
 
@@ -41,15 +42,15 @@ AnPostReturn.configure do |config|
     host: 'your_sftp_host',
     username: 'your_username',
     password: 'your_password',
-    remote_path: '/path/to/remote/files'
+    remote_path: '/path/to/remote/files'  # The remote directory where An Post places tracking files
   }
 
-  # Optional proxy configuration
+  # Optional proxy configuration (for An Post IP whitelisting)
   config.proxy_config = {
     host: 'proxy-host',
     port: 'proxy-port',
-    user: 'proxy-user',
-    password: 'proxy-password'
+    user: 'proxy-user',     # Optional proxy authentication
+    password: 'proxy-password'  # Optional proxy authentication
   }
 
   # Environment setting
@@ -66,8 +67,8 @@ end
 label = AnPostReturn::ReturnLabel.create(
   # Required parameters
   contract_number: "123456",
-  product_code: "DOM",
-  weight: 1.5,
+  product_code: "DOM",  # DOM for domestic, EU for European Union, INT for International
+  weight: 1.5,  # Weight in kilograms
 
   # Address details
   from_address: {
@@ -89,41 +90,61 @@ label = AnPostReturn::ReturnLabel.create(
 )
 
 # Access the label details
-puts label.tracking_number
-puts label.label_url
+puts label.tracking_number  # The An Post tracking number for this shipment
+puts label.label_url       # URL to download the generated label
 ```
 
 ### Tracking Shipments
+
+The tracking system works with An Post's SFTP service, where tracking files are named in the format:
+`CDT99999999SSSSS.txt` where:
+
+- CDT is the prefix (Customer Data Tracking)
+- 99999999 is your An Post Customer Account Number
+- SSSSS is a sequence number (starts at 1, increments by 1 for each file)
+- .txt is the file extension
 
 ```ruby
 tracker = AnPostReturn::Tracker.new
 
 # Track by account number (gets all files)
+# This will retrieve all tracking files for the given account number
 tracker.track_with_account_number("3795540") do |file, data|
   puts "Processing file: #{file}"
   puts "Tracking data: #{data}"
 end
 
-# Track by account number (gets the last 2 files)
+# Track by account number (get last N files)
+# Useful when you only want recent tracking updates
 tracker.track_with_account_number("3795540", last: 2) do |file, data|
   puts "Processing file: #{file}"
   puts "Tracking data: #{data}"
 end
 
-# Track from a specific file onwards, by increment file name by 1 until no file is found
+# Track from a specific file onwards, by incrementing file name by 1 until no file is found
+# Useful for resuming tracking from a known point
 tracker.track_from("cdt0370132115864.txt") do |file, data|
   puts "Processing file: #{file}"
   puts "Tracking data: #{data}"
 end
 ```
 
-The tracking data will contain:
+The tracking data structure contains:
 
-- `:header` - File header information
-- `:data` - Array of tracking events
-- `:footer` - File footer information
+- `:header` - File header information including account details
+- `:data` - Array of tracking events for multiple shipments
+- `:footer` - File footer information including totals
 
-Possible tracking statuses: "SORTED", "ATTEMPTED DELIVERY", "DELIVERED", "ITEM ON HAND", "PRE-ADVICE", "OUT FOR DELIVERY", "ITEM ACCEPTED", "CUSTOMER INSTRUCTION REC"
+Possible tracking statuses:
+
+- "SORTED" - Item has been sorted at An Post facility
+- "ATTEMPTED DELIVERY" - Delivery was attempted but not completed
+- "DELIVERED" - Item has been successfully delivered
+- "ITEM ON HAND" - Item is being held at An Post facility
+- "PRE-ADVICE" - Item is expected but not yet received
+- "OUT FOR DELIVERY" - Item is on the delivery vehicle
+- "ITEM ACCEPTED" - Item has been received by An Post
+- "CUSTOMER INSTRUCTION REC" - Customer has provided special instructions
 
 ## Development
 
