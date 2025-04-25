@@ -8,11 +8,10 @@ require_relative "resources/return_label"
 
 module AnPostReturn
   class Client
-    attr_reader :config, :connection
+    attr_reader :config
 
-    def initialize(config = Configuration.new)
-      @config = config
-      @connection = setup_connection
+    def initialize
+      @config = AnPostReturn.configuration
     end
 
     def return_labels
@@ -79,14 +78,6 @@ module AnPostReturn
       end
 
       "Unknown error"
-    end
-
-    def setup_connection
-      Faraday.new(url: config.api_base_url) do |conn|
-        conn.request :json
-        conn.response :json
-        conn.headers = default_headers
-      end
     end
   end
 end
