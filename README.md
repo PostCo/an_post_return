@@ -36,10 +36,24 @@ Configure the gem with your An Post credentials:
 
 ```ruby
 AnPostReturn.configure do |config|
-  config.sftp_host = 'your_sftp_host'
-  config.sftp_username = 'your_username'
-  config.sftp_password = 'your_password'
-  config.environment = :production # or :test for sandbox environment
+  # SFTP Configuration (required)
+  config.sftp_config = {
+    host: 'your_sftp_host',
+    username: 'your_username',
+    password: 'your_password',
+    remote_path: '/path/to/remote/files'
+  }
+
+  # Optional proxy configuration
+  config.proxy_config = {
+    host: 'proxy-host',
+    port: 'proxy-port',
+    user: 'proxy-user',
+    password: 'proxy-password'
+  }
+
+  # Environment setting
+  config.test = false # Set to true for sandbox environment
 end
 ```
 
@@ -79,24 +93,37 @@ puts label.tracking_number
 puts label.label_url
 ```
 
-### Listing Available Files
+### Tracking Shipments
 
 ```ruby
-client = AnPostReturn::SFTPClient.new
-files = client.list_files
-puts files
+tracker = AnPostReturn::Tracker.new
+
+# Track by account number (gets all files)
+tracker.track_with_account_number("3795540") do |file, data|
+  puts "Processing file: #{file}"
+  puts "Tracking data: #{data}"
+end
+
+# Track by account number (gets the last 2 files)
+tracker.track_with_account_number("3795540", last: 2) do |file, data|
+  puts "Processing file: #{file}"
+  puts "Tracking data: #{data}"
+end
+
+# Track from a specific file onwards, by increment file name by 1 until no file is found
+tracker.track_from("cdt0370132115864.txt") do |file, data|
+  puts "Processing file: #{file}"
+  puts "Tracking data: #{data}"
+end
 ```
 
-### Reading a Specific File
+The tracking data will contain:
 
-```ruby
-client = AnPostReturn::SFTPClient.new
-content = client.read_file('path/to/file.txt')
-puts content
-```
+- `:header` - File header information
+- `:data` - Array of tracking events
+- `:footer` - File footer information
 
-tracking statuses
-"SORTED", "ATTEMPTED DELIVERY", "DELIVERED", "ITEM ON HAND", "PRE-ADVICE", "OUT FOR DELIVERY", "ITEM ACCEPTED", "CUSTOMER INSTRUCTION REC"
+Possible tracking statuses: "SORTED", "ATTEMPTED DELIVERY", "DELIVERED", "ITEM ON HAND", "PRE-ADVICE", "OUT FOR DELIVERY", "ITEM ACCEPTED", "CUSTOMER INSTRUCTION REC"
 
 ## Development
 
