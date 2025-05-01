@@ -14,7 +14,7 @@ AnPostReturn.configure do |config|
   config.proxy_config = {
     host: ENV["PROXY_HOST"],
     port: ENV["PROXY_PORT"],
-    username: ENV["PROXY_USERNAME"],
+    user: ENV["PROXY_USERNAME"],
     password: ENV["PROXY_PASSWORD"],
   }
   config.sftp_config = {
@@ -27,6 +27,31 @@ end
 
 require "irb"
 require "pry"
+
+# @client = AnPostReturn::Client.new
+# @client.return_labels.create(
+#   {
+#     output_response_type: "Label",
+#     sender: {
+#       first_name: "Jane",
+#       last_name: "Smith",
+#       contact_number: "0871234567",
+#       email_address: "test@email.com",
+#     },
+#     sender_address: {
+#       address_line1: "Exo Building",
+#       address_line2: "North Wall Quay",
+#       city: "Dublin 1",
+#       eircode: "D01 W5Y2",
+#       county: "Dublin",
+#       country: "Ireland",
+#       countrycode: "IE",
+#     },
+#     retailer_account_no: "test_account",
+#     retailer_return_reason: "Does not fit",
+#     retailer_order_number: "987654321",
+#   },
+# )
 
 # @tracker = AnPostReturn::Tracker.new
 

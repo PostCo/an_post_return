@@ -29,12 +29,19 @@ module AnPostReturn
     def proxy_uri
       return nil unless proxy_configured?
 
-      uri = "http://#{proxy_config[:host]}:#{proxy_config[:port]}"
-      uri =
-        "http://#{proxy_config[:user]}:#{proxy_config[:password]}@#{proxy_config[:host]}:#{proxy_config[:port]}" if proxy_config[
-        :user
-      ] && proxy_config[:password]
-      URI.parse(uri)
+      user = proxy_config[:user]
+      password = proxy_config[:password]
+      host = proxy_config[:host]
+      port = proxy_config[:port]
+
+      uri_string = "http://#{host}:#{port}"
+      if user && password
+        encoded_user = URI.encode_www_form_component(user)
+        encoded_password = URI.encode_www_form_component(password)
+        uri_string = "http://#{encoded_user}:#{encoded_password}@#{host}:#{port}"
+      end
+
+      URI.parse(uri_string)
     end
 
     def sftp_configured?

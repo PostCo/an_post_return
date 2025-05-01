@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    an_post_return (0.2.1)
+    an_post_return (0.2.2)
       activesupport (~> 7.0)
       base64 (~> 0.2.0)
       bcrypt_pbkdf (~> 1.0, >= 1.0.2)
