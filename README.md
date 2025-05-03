@@ -128,6 +128,10 @@ tracker.track_from("cdt0370132115864.txt") do |file, data|
   puts "Processing file: #{file}"
   puts "Tracking data: #{data}"
 end
+
+# The tracker will reuse the same sftp connection within the tracker instance
+# Remember to call the disconnect function to prevent the sftp connection stays idle in the memory
+tracker.disconnect
 ```
 
 The tracking data structure contains:
