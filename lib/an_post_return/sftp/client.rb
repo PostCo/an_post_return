@@ -9,7 +9,9 @@ module AnPostReturn
   module SFTP
     class Client
       # SFTP connection configuration
-      attr_reader :host, :username, :password, :proxy_config
+      attr_reader :host, :username, :password, :proxy_config, :connected
+
+      alias connected? connected
 
       # Initialize a new SFTP client
       #
@@ -34,7 +36,12 @@ module AnPostReturn
       # @return [Boolean] true if connection successful, false otherwise
       # @raise [AnPostReturn::SFTP::ConnectionError] if connection fails
       def connect
-        sftp_client.connect!
+        return true if @connected
+
+        @ssh_session = start_ssh_session
+        @sftp_client = Net::SFTP::Session.new(@ssh_session)
+        @sftp_client.connect!
+
         @connected = true
         true
       rescue Net::SSH::Exception => e
@@ -47,8 +54,8 @@ module AnPostReturn
       def disconnect
         return unless @connected
 
-        sftp_client.close_channel
-        ssh_session.close
+        @sftp_client.close_channel
+        @ssh_session.close
         @connected = false
       end
 
@@ -63,7 +70,7 @@ module AnPostReturn
         temp_file = Tempfile.new(["sftp", File.extname(remote_path)])
 
         begin
-          sftp_client.download!(remote_path, temp_file.path)
+          @sftp_client.download!(remote_path, temp_file.path)
           block_given? ? yield(temp_file) : temp_file
         rescue Net::SFTP::StatusException => e
           if e.message.include?("no such file")
@@ -91,9 +98,9 @@ module AnPostReturn
 
         begin
           if glob_pattern
-            sftp_client.dir.glob(remote_path, glob_pattern) { |entry| entries << entry }
+            @sftp_client.dir.glob(remote_path, glob_pattern) { |entry| entries << entry }
           else
-            sftp_client.dir.foreach(remote_path) { |entry| entries << entry }
+            @sftp_client.dir.foreach(remote_path) { |entry| entries << entry }
           end
           entries
         rescue Net::SFTP::StatusException => e
@@ -103,25 +110,20 @@ module AnPostReturn
 
       private
 
-      def sftp_client
-        @sftp_client ||= Net::SFTP::Session.new(ssh_session)
-      end
 
-      def ssh_session
-        return @ssh_session if @ssh_session
-
+      def start_ssh_session
         ssh_options = { password: password, auth_methods: ["password"] }
 
         if proxy_config
           ssh_options[:proxy] = Net::SSH::Proxy::HTTP.new(
             proxy_config[:host],
             proxy_config[:port],
-            user: proxy_config[:username],
+            user: proxy_config[:user],
             password: proxy_config[:password],
           )
         end
 
-        @ssh_session = Net::SSH.start(host, username, ssh_options)
+        Net::SSH.start(host, username, ssh_options)
       end
 
       def ensure_connected

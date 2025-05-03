@@ -53,9 +53,9 @@ require "pry"
 #   },
 # )
 
-# @tracker = AnPostReturn::Tracker.new
+@tracker = AnPostReturn::Tracker.new
 
-# @tracker.track_from("cdt0370132115864.txt") do |file, data|
+# @tracker.track_from("cdt0379554008897.txt") do |file, data|
 #   puts "File: #{file}"
 #   puts "Data: #{data}"
 # end
@@ -71,3 +71,6 @@ require "pry"
 # end
 
 IRB.start(__FILE__)
+
+puts "Disconnect tracker sftp connection before exiting..."
+@tracker.disconnect
